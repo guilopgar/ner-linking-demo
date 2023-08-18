@@ -1,0 +1,30 @@
+version: '2.3'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    
+    depends_on:
+      - db
+    ports:
+      - 82:82
+
+  db:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mynetwork
+
+
+volumes:
+  mongodb_data:
+
+networks:
+  mynetwork:
+    external: true
+
