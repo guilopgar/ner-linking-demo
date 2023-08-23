@@ -1,13 +1,11 @@
 Most of the code implemented in [scripts](https://github.com/Lokmane-ELO/docker-deepspanorm/tree/main/scripts) and [src](https://github.com/Lokmane-ELO/docker-deepspanorm/tree/main/src) folders was reused from the [deepspanorm](https://github.com/luisgasco/deepspanorm/tree/main) original repository.
 
 ### Setup and Execution Instructions
-## 1. Restore MongoDB Data
-  - Unzip the bioMnorm.zip file to a directory:
+## 1. Processing the gazetteers
+  - For each clinical entity type to be normalized, a gazetteer needs to be loaded, pre-processed and saved. For intance, to process the gazetteer corresponding to the "enfermedad" type, the following command must be executed:
     
-        unzip database/bioMnorm.zip -d /path_to_directory_where_you_want_to_unzip/
-  - Restore the MongoDB data using the mongorestore command:
-
-        mongorestore -d bioMnorm /path_to_directory_where_you_unzipped/bioMnorm
+        python scripts/gazetteer_creation.py -g enfermedad
+  
   
 ## 2. Build and Run the Docker Container
    - Navigate to the directory containing the Dockerfile (root directory):
