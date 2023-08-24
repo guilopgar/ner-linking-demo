@@ -1,4 +1,4 @@
-label	off0	off1	span
+label	start	end	span
 DISEASE	38	43	obesa
 DISEASE	45	53	diabetes
 PROCEDURE	49	507	masa tumoral
