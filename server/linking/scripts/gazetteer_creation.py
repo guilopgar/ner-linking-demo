@@ -84,7 +84,7 @@ if os.path.exists(out_gaz_path):
         dict_term_code = pickle.load(f)
 else:
     print("Term-code dictionary does not exist, creating it...")
-    if not os.path.isfile(gaz_path):
+    if not os.path.exists(gaz_path):
         raise Exception("The specified gazetteer does not exist: " + gaz_name)
 
     dict_term_code = gazetteer_pre_process.read_gazetteer_to_dict(

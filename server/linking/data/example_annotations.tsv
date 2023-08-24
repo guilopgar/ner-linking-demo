@@ -1,0 +1,12 @@
+label	off0	off1	span
+ENFERMEDAD	38	43	obesa
+ENFERMEDAD	45	53	diabetes
+PROCEDIMIENTO	49	507	masa tumoral
+ENFERMEDAD	56	66	hipertensa
+PROCEDIMIENTO	63	648	tumor suprarrenal
+PROCEDIMIENTO	84	884	tumor localizado en la glándula suprarrenal
+PROCEDIMIENTO	132	1356	mielolipoma de la glándula adrenal
+ENFERMEDAD	495	507	masa tumoral
+ENFERMEDAD	631	648	tumor suprarrenal
+ENFERMEDAD	841	884	tumor localizado en la glándula suprarrenal
+ENFERMEDAD	1322	1356	mielolipoma de la glándula adrenal
