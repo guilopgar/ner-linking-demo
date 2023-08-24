@@ -2,9 +2,9 @@ Most of the code implemented in [scripts](https://github.com/guilopgar/ner-linki
 
 ### Setup and Execution Instructions
 ## 1. Processing the gazetteers
-  - For each clinical entity type to be normalized, a gazetteer needs to be loaded, pre-processed and saved. For instance, to process the gazetteer corresponding to the "enfermedad" type, the following command must be executed:
+  - For each clinical entity type to be normalized, a gazetteer needs to be loaded, pre-processed and saved. For instance, to process the gazetteer corresponding to the "disease" type, the following command must be executed:
     
-        python scripts/gazetteer_creation.py -g enfermedad
+        python scripts/gazetteer_creation.py -g disease
   
   
 ## 2. Normalizing the mentions
