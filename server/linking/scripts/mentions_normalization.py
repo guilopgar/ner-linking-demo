@@ -83,7 +83,7 @@ print("Model path:", transformer_model_path)
 
 # TODO: modify according to the shared folder
 df_ner = pd.read_csv(preds_path, sep='\t', header=0)
-# df_ner expected columns: label, off0, off1, span, code
+# df_ner expected columns: label, off0, off1, span
 
 
 # 2. Mentions normalization
