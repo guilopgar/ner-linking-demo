@@ -10,4 +10,4 @@ Most of the code implemented in [scripts](https://github.com/guilopgar/ner-linki
 ## 2. Normalizing the mentions
    - We need to provide the script the path of the table containing the mentions to be normalized, as well as the number of candidate codes to be predicted by the model:
 
-         python scripts/mentions_normalization.py -p data/example_annotations.tsv -k 3
+         python scripts/mentions_normalization.py -p ../data/example_annotations.tsv -k 3
