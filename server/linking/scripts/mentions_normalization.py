@@ -63,7 +63,7 @@ parser.add_argument(
     action='store',
     required=True,
     help="Path of the table containing the detected " +
-    "mentions to be normalized"
+    "mentions to be normalized. Default: '../../data/mentions.tsv'"
 )
 parser.add_argument(
     "-k",
@@ -71,8 +71,8 @@ parser.add_argument(
     type=int,
     action='store',
     default=10,
-    help="The number of candidate codes to be retrieved for each mention, " +
-         "e.g. 20"
+    help="The number of candidate codes to be retrieved for each mention. " +
+         "Default: 10"
 )
 
 args = parser.parse_args()

@@ -853,3 +853,36 @@ def ens_ner_preds_brat_format(
     )
 
     return pd.DataFrame(ann_res)
+
+
+def format_annotations(
+        df_ann: pd.DataFrame, df_text: pd.DataFrame, label: str
+) -> pd.DataFrame:
+    """
+    Format detected annotations, creating a table with 4 columns:
+    label, start, end, span
+
+    df_ann: expected cols: clinical_case, location
+    df_text: expected cols: doc_id, raw_text
+    """
+    if df_ann.shape[0] == 0:
+        raise Exception("There no annotations to format!")
+
+    # considering both continuous and discontinuous annotations
+    df_res = df_ann.copy()
+    df_res['start'] = df_res['location'].apply(
+        lambda x: int(x.split(';')[0].split(' ')[0])
+    )
+    df_res['end'] = df_res['location'].apply(
+        lambda x: int(x.split(';')[-1].split(' ')[1])
+    )
+    df_res['span'] = df_res.apply(
+        lambda row: df_text[
+            df_text['doc_id'] == row['clinical_case']
+        ]['raw_text'].values[0][
+            row['start']:row['end']
+        ],
+        axis=1
+    )
+    df_res['label'] = label
+    return df_res[['label', 'start', 'end', 'span']]
