@@ -26,32 +26,6 @@ sys.path.append(
 from candidates import faisslm
 
 
-# Input arguments management
-parser = argparse.ArgumentParser()
-# TODO: modify according to the shared folder
-parser.add_argument(
-    "-p",
-    "--preds",
-    type=str,
-    action='store',
-    required=True,
-    help="Path of the table containing the detected " +
-    "mentions to be normalized"
-)
-parser.add_argument(
-    "-k",
-    "--kcand",
-    type=int,
-    action='store',
-    default=10,
-    help="The number of candidate codes to be retrieved for each mention, " +
-         "e.g. 20"
-)
-
-args = parser.parse_args()
-preds_path = args.preds
-k_cand = args.kcand
-
 # Gazetteer directory
 gaz_dir = os.path.join(
     ROOT_PATH,
@@ -79,9 +53,36 @@ if "spanish_sapbert" in MODEL_NAME:
 print("Model path:", transformer_model_path)
 
 
+# Input arguments management
+parser = argparse.ArgumentParser()
+# TODO: modify according to the shared folder (if needed)
+parser.add_argument(
+    "-p",
+    "--preds",
+    type=str,
+    action='store',
+    required=True,
+    help="Path of the table containing the detected " +
+    "mentions to be normalized"
+)
+parser.add_argument(
+    "-k",
+    "--kcand",
+    type=int,
+    action='store',
+    default=10,
+    help="The number of candidate codes to be retrieved for each mention, " +
+         "e.g. 20"
+)
+
+args = parser.parse_args()
+preds_path = args.preds
+k_cand = args.kcand
+
+
 # 1. Mentions data loading
 
-# TODO: modify according to the shared folder
+# TODO: modify according to the shared folder (if needed)
 df_ner = pd.read_csv(preds_path, sep='\t', header=0)
 # df_ner expected columns: label, off0, off1, span
 
@@ -172,5 +173,5 @@ else:
 
 # 3. Save normalized data
 
-# TODO: modify according to the shared folder
+# TODO: modify according to the shared folder (if needed)
 df_preds.to_csv(preds_path, sep='\t', index=False, header=True)
