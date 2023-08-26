@@ -44,7 +44,6 @@ gaz_name = args.gaz
 # Gazetteer directory
 gaz_dir = os.path.join(
     ROOT_PATH,
-    "data",
     "gazetteer"
 )
 

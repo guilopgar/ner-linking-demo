@@ -29,7 +29,6 @@ from candidates import faisslm
 # Gazetteer directory
 gaz_dir = os.path.join(
     ROOT_PATH,
-    "data",
     "gazetteer"
 )
 
