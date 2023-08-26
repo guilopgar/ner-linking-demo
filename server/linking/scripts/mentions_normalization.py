@@ -62,7 +62,7 @@ parser.add_argument(
     action='store',
     required=True,
     help="Path of the table containing the detected " +
-    "mentions to be normalized. Default: '../../data/mentions.tsv'"
+    "mentions to be normalized, e.g. '../../data/mentions.tsv'"
 )
 parser.add_argument(
     "-k",
