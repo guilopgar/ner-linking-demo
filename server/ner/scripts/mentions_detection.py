@@ -261,10 +261,12 @@ for entity_type in sorted(arr_ent_type):
 # Create final predictions table
 df_pred = pd.concat(
     arr_df_pred
-).sort_values(
-    ['start', 'end'], ascending=True
 )
-assert ~df_pred[['start', 'end']].duplicated().any()
+if df_pred.shape[0] > 0:
+    df_pred.sort_values(
+        ['start', 'end'], ascending=True, inplace=True
+    )
+    assert ~df_pred[['start', 'end']].duplicated().any()
 
 # Save table
 # TODO: modify according to the shared folder (if needed)
