@@ -4,6 +4,7 @@ using Transformers: Post-processing model preductions
 """
 
 from abc import ABC, abstractmethod
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -866,23 +867,31 @@ def format_annotations(
     df_text: expected cols: doc_id, raw_text
     """
     if df_ann.shape[0] == 0:
-        raise Exception("There no annotations to format!")
+        warnings.warn('There are no annotations to format!')
+        df_res = pd.DataFrame({
+            "label": [],
+            "start": [],
+            "end": [],
+            "span": []
+        }) 
 
-    # considering both continuous and discontinuous annotations
-    df_res = df_ann.copy()
-    df_res['start'] = df_res['location'].apply(
-        lambda x: int(x.split(';')[0].split(' ')[0])
-    )
-    df_res['end'] = df_res['location'].apply(
-        lambda x: int(x.split(';')[-1].split(' ')[1])
-    )
-    df_res['span'] = df_res.apply(
-        lambda row: df_text[
-            df_text['doc_id'] == row['clinical_case']
-        ]['raw_text'].values[0][
-            row['start']:row['end']
-        ],
-        axis=1
-    )
-    df_res['label'] = label
+    else:
+        # considering both continuous and discontinuous annotations
+        df_res = df_ann.copy()
+        df_res['start'] = df_res['location'].apply(
+            lambda x: int(x.split(';')[0].split(' ')[0])
+        )
+        df_res['end'] = df_res['location'].apply(
+            lambda x: int(x.split(';')[-1].split(' ')[1])
+        )
+        df_res['span'] = df_res.apply(
+            lambda row: df_text[
+                df_text['doc_id'] == row['clinical_case']
+            ]['raw_text'].values[0][
+                row['start']:row['end']
+            ],
+            axis=1
+        )
+        df_res['label'] = label
+
     return df_res[['label', 'start', 'end', 'span']]
