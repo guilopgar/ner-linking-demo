@@ -4,6 +4,7 @@ Script to perform Entity Linking (EL) on a set of previously detected mentions
 
 import sys
 import os
+import warnings
 import pickle
 import time
 import argparse
@@ -89,7 +90,7 @@ df_ner = pd.read_csv(preds_path, sep='\t', header=0)
 # 2. Mentions normalization
 
 if df_ner.shape[0] == 0:
-    print("No mentions to be normalized were found!")
+    warnings.warn('There are no annotations to normalize!')
     df_preds = df_ner.copy()
     df_preds[CODE_COL] = []
 
