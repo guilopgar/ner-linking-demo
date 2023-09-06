@@ -15,7 +15,7 @@ import pandas as pd
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_NAME = "spanish_sapbert_15_parents_1epoch"
 ENTITY_COL = "label"
-OFFSET_COLS = ["start", "end"]
+OFFSET_COLS = ["start", "end", "label"]
 SPAN_COL = "span"
 CODE_COL = "code"
 

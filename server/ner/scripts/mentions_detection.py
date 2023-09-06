@@ -5,6 +5,7 @@ Script to perform Medical Entity Recognition (MER) on an input text
 import os
 import time
 import sys
+import warnings
 import argparse
 from transformers import RobertaTokenizerFast
 from transformers import TFRobertaForTokenClassification
@@ -165,108 +166,124 @@ text_tok_dict, text_y, text_frag, text_start_end_frag, text_word_id = \
         sub_lab_converter=sub_lab_converter,
         greedy=GREEDY
     )
-text_ind, text_att = \
-    text_tok_dict['input_ids'], text_tok_dict['attention_mask']
 
-
-# 3. Mentions detection
-
-# 3.1. MER model definition
-iob_num_labels = len(lab_encoder)
-
-input_ids = Input(shape=(SEQ_LEN,), name='input_ids', dtype='int64')
-attention_mask = Input(shape=(SEQ_LEN,), name='attention_mask', dtype='int64')
-
-out_seq = model.layers[0](
-    input_ids=input_ids, attention_mask=attention_mask
-)[0]
-
-out_iob = Dense(
-    units=iob_num_labels, kernel_initializer=GlorotUniform(seed=RANDOM_SEED)
-)(out_seq)  # Multi-class classification
-
-out_iob_model = Activation(activation='softmax', name='iob_output')(out_iob)
-
-model = Model(inputs=[input_ids, attention_mask], outputs=out_iob_model)
-
-print(model.summary())
-
-arr_df_pred = []
-for entity_type in sorted(arr_ent_type):
-    print("\nDetecting", entity_type, "mentions...")
-
-    # 3.2. Load model weights
-    ner_model_path = os.path.join(
-        root_model_path,
-        "model_checkpoints",
-        MODEL_NAME,
-        entity_type
-    )
-    try:
-        model.load_weights(
-            ner_model_path
-        )
-    except tf.errors.NotFoundError as exc:
-        raise Exception(
-            "No MER model matching entity: " + entity_type
-        ) from exc
-
-    # 3.3. Model predictions
-    start_time = time.time()
-    text_preds = model.predict({
-        'input_ids': text_ind, 'attention_mask': text_att
+if len(text_tok_dict) == 0:
+    warnings.warn('The input text is empty!')
+    df_pred = pd.DataFrame({
+        "label": [],
+        "start": [],
+        "end": [],
+        "span": []
     })
-    end_time = time.time()
-    print(
-        "Execution time of making predictions (mins):",
-        (end_time - start_time) / 60
+
+else:
+    text_ind, text_att = \
+        text_tok_dict['input_ids'], text_tok_dict['attention_mask']
+
+    # 3. Mentions detection
+
+    # 3.1. MER model definition
+    iob_num_labels = len(lab_encoder)
+
+    input_ids = Input(
+        shape=(SEQ_LEN,), name='input_ids', dtype='int64'
+    )
+    attention_mask = Input(
+        shape=(SEQ_LEN,), name='attention_mask', dtype='int64'
     )
 
-    # 3.4. Predictions post-processing
-    word_preds_converter = post_proc.ProdWordPreds()
-    custom_ann_extractor = post_proc.AnnExtractorContinuous(
-        lab_extractor=post_proc.LabExtractorIOB(
-            arr_lab_decoder=[lab_decoder],
-            empty_val=EMPTY_VAL,
-            begin_val=B_VAL,
-            inside_val=I_VAL
-        ),
-        allow_inside_as_begin=ALLOW_IN_AS_BEGIN
-    )
-    custom_preds_frag_tok = post_proc.NeuralPredsFragTok(
-        tokenizer=custom_tokenizer
-    )
+    out_seq = model.layers[0](
+        input_ids=input_ids, attention_mask=attention_mask
+    )[0]
 
-    df_pred_text = post_proc.extract_annotations_from_model_preds(
-        arr_doc=doc_list, arr_frags=text_frag,
-        arr_preds=[text_preds], arr_start_end=text_start_end_frag,
-        arr_word_id=text_word_id,
-        arr_preds_pos_tok=custom_preds_frag_tok.calculate_pos_tok(
-            arr_len=text_start_end_frag
-        ),
-        ann_extractor=custom_ann_extractor,
-        word_preds_converter=word_preds_converter
+    out_iob = Dense(
+        units=iob_num_labels,
+        kernel_initializer=GlorotUniform(seed=RANDOM_SEED)
+    )(out_seq)  # Multi-class classification
+
+    out_iob_model = Activation(
+        activation='softmax', name='iob_output'
+    )(out_iob)
+
+    model = Model(inputs=[input_ids, attention_mask], outputs=out_iob_model)
+
+    print(model.summary())
+
+    arr_df_pred = []
+    for entity_type in sorted(arr_ent_type):
+        print("\nDetecting", entity_type, "mentions...")
+
+        # 3.2. Load model weights
+        ner_model_path = os.path.join(
+            root_model_path,
+            "model_checkpoints",
+            MODEL_NAME,
+            entity_type
+        )
+        try:
+            model.load_weights(
+                ner_model_path
+            )
+        except tf.errors.NotFoundError as exc:
+            raise Exception(
+                "No MER model matching entity: " + entity_type
+            ) from exc
+
+        # 3.3. Model predictions
+        start_time = time.time()
+        text_preds = model.predict({
+            'input_ids': text_ind, 'attention_mask': text_att
+        })
+        end_time = time.time()
+        print(
+            "Execution time of making predictions (mins):",
+            (end_time - start_time) / 60
+        )
+
+        # 3.4. Predictions post-processing
+        word_preds_converter = post_proc.ProdWordPreds()
+        custom_ann_extractor = post_proc.AnnExtractorContinuous(
+            lab_extractor=post_proc.LabExtractorIOB(
+                arr_lab_decoder=[lab_decoder],
+                empty_val=EMPTY_VAL,
+                begin_val=B_VAL,
+                inside_val=I_VAL
+            ),
+            allow_inside_as_begin=ALLOW_IN_AS_BEGIN
+        )
+        custom_preds_frag_tok = post_proc.NeuralPredsFragTok(
+            tokenizer=custom_tokenizer
+        )
+
+        df_pred_text = post_proc.extract_annotations_from_model_preds(
+            arr_doc=doc_list, arr_frags=text_frag,
+            arr_preds=[text_preds], arr_start_end=text_start_end_frag,
+            arr_word_id=text_word_id,
+            arr_preds_pos_tok=custom_preds_frag_tok.calculate_pos_tok(
+                arr_len=text_start_end_frag
+            ),
+            ann_extractor=custom_ann_extractor,
+            word_preds_converter=word_preds_converter
+        )
+
+        df_pred_text = post_proc.format_annotations(
+            df_ann=df_pred_text,
+            df_text=df_text,
+            label=entity_type.upper()
+        )
+        arr_df_pred.append(df_pred_text)
+
+    # 4. Save predicted mentions
+
+    # Create final predictions table
+    df_pred = pd.concat(
+        arr_df_pred
     )
-
-    df_pred_text = post_proc.format_annotations(
-        df_ann=df_pred_text,
-        df_text=df_text,
-        label=entity_type.upper()
-    )
-    arr_df_pred.append(df_pred_text)
-
-
-# 4. Save predicted mentions
-
-# Create final predictions table
-df_pred = pd.concat(
-    arr_df_pred
-)
-if df_pred.shape[0] > 0:
-    df_pred.sort_values(
-        ['start', 'end'], ascending=True, inplace=True
-    )
-    assert ~df_pred[['start', 'end']].duplicated().any()
+    if df_pred.shape[0] > 0:
+        df_pred.sort_values(
+            ['start', 'end', 'label'], ascending=True, inplace=True
+        )
+        assert ~df_pred[['start', 'end', 'label']].duplicated().any()
 
 # Save table
 # TODO: modify according to the shared folder (if needed)
