@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  ner:
+    build: ./ner
+    runtime: nvidia
+    network_mode: "host"
+    volumes:
+      - ./data:/data
+      - ./ner:/app
+   
+
+  linking:
+    build: ./linking
+    runtime: nvidia
+    network_mode: "host"
+    volumes:
+      - ./data:/data
+      - ./linking:/app
+    
+
+
+volumes:
+  shared_data:
