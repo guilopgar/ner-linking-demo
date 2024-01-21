@@ -4,7 +4,7 @@ Demo app that performs both the detection and normalization of different clinica
 # Starting the Application
 
 1. **Starting the Containers**:
-   Navigate to the root directory and execute the following command to build and run the containers for the two models (NER and linking models):
+   Navigate to the [server](https://github.com/guilopgar/ner-linking-demo/tree/features/server) directory and execute the following command to build and run the containers for the two models (NER and linking models):
 docker-compose up
 
 2. **Starting the Backend**:
